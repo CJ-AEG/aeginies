@@ -14,23 +14,39 @@ import plotly.express as px
 
 # ✅ Titre de l'application
 st.set_page_config(layout="wide")
-st.title("Analyse des Z-Scores - Prototype SaaS")
+st.title("Analyse des Z-Scores - Aeginies")
 
 # ✅ Déclaration globale du dataframe
 global df
 df = pd.DataFrame()
 
-# ✅ Fonction de cache pour stocker le fichier en mémoire temporaire
+# ✅ Fonction pour charger automatiquement depuis GitHub
 @st.cache_data
-def load_data(file):
-    df = pd.read_excel(file, sheet_name="Sheet1")
-    return df
+def load_data_from_repo():
+    url = 'https://raw.githubusercontent.com/CJ-AEG/aeginies/main/base_inies_complete.xlsx'
+    try:
+        response = requests.get(url)
+        if response.status_code == 200:
+            file = io.BytesIO(response.content)
+            df = pd.read_excel(file, sheet_name="Sheet1", engine='openpyxl')
+            return df
+        else:
+            st.error(f"❌ Erreur de chargement du fichier : {response.status_code}")
+            return pd.DataFrame()
+    except Exception as e:
+        st.error(f"⚠️ Erreur lors du chargement : {e}")
+        return pd.DataFrame()
 
-# ✅ Zone pour uploader un fichier Excel
-uploaded_file = st.file_uploader("Importer un fichier Excel", type=["xlsx"])
+# ✅ Charger automatiquement la base de données
+df = load_data_from_repo()
+if not df.empty:
+    st.success("✅ Base de données chargée automatiquement depuis GitHub !")
+
+# ✅ Zone pour uploader un fichier Excel (optionnel)
+uploaded_file = st.file_uploader("📂 Importer un fichier Excel", type=["xlsx"])
 
 if uploaded_file is not None:
-    df = load_data(uploaded_file)
+    df = pd.read_excel(uploaded_file, sheet_name="Sheet1", engine='openpyxl')
     st.success("✅ Fichier chargé avec succès !")
 
 # ✅ Affichage des données importées AVANT traitement
