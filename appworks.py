@@ -134,6 +134,8 @@ if uploaded_file is not None:
 
 # ✅ Fonction de traitement des données après recherche
 def process_data(filtered_data):
+    global df   # ✅ Déclaré avant toute utilisation de df
+    
     if filtered_data.empty:
         st.warning("⚠️ Aucun élément trouvé.")
         return
