@@ -40,13 +40,15 @@ if not df.empty:
     st.write("### 🔎 Données initiales chargées :")
     st.dataframe(df)
 
-# ✅ Zone pour uploader un fichier Excel
-uploaded_file = st.file_uploader("📂 Importer un fichier Excel", type=["xlsx"])
-if uploaded_file is not None:
-    df = pd.read_excel(uploaded_file, sheet_name="Sheet1", engine='openpyxl')
-    st.success("✅ Fichier chargé avec succès !")
-    st.write("### 🔎 Données importées :")
-    st.dataframe(df)
+# ✅ Section sidebar pour importer un fichier Excel
+with st.sidebar:
+    st.write("📂 **Optionnel : Importer un fichier Excel**")
+    uploaded_file = st.file_uploader("Importer un fichier Excel", type=["xlsx"])
+    if uploaded_file is not None:
+        df = pd.read_excel(uploaded_file, sheet_name="Sheet1", engine='openpyxl')
+        st.success("✅ Fichier chargé avec succès !")
+        st.write("### 🔎 Données importées :")
+        st.dataframe(df)
 
 # ✅ Fonction de traitement des données après recherche
 def process_data(filtered_data):
@@ -127,4 +129,3 @@ if search_term:
             process_data(filtered_data)
     else:
         st.warning("⚠️ Veuillez d'abord charger un fichier Excel valide avant de lancer une recherche.")
-
