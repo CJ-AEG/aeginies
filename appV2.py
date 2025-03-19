@@ -11,6 +11,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.edge.options import Options
 from tqdm import tqdm
 import plotly.express as px
+import requests
+import io
 
 # ✅ Titre de l'application
 st.set_page_config(layout="wide")
@@ -24,25 +26,31 @@ df = pd.DataFrame()
 @st.cache_data
 def load_data_from_repo():
     url = 'https://raw.githubusercontent.com/CJ-AEG/aeginies/main/base_inies_complete.xlsx'
-    df = pd.read_excel(url, sheet_name="Sheet1")
-    return df
+    try:
+        response = requests.get(url)
+        if response.status_code == 200:
+            file = io.BytesIO(response.content)
+            df = pd.read_excel(file, sheet_name="Sheet1", engine='openpyxl')
+            return df
+        else:
+            st.error(f"❌ Erreur de chargement du fichier : {response.status_code}")
+            return pd.DataFrame()
+    except Exception as e:
+        st.error(f"⚠️ Erreur lors du chargement : {e}")
+        return pd.DataFrame()
 
-# ✅ Fonction de cache pour le fichier uploadé
-@st.cache_data
-def load_data(file):
-    df = pd.read_excel(file, sheet_name="Sheet1")
-    return df
+# ✅ Charger automatiquement la base de données
+df = load_data_from_repo()
+if not df.empty:
+    st.success("✅ Base de données chargée automatiquement depuis GitHub !")
 
 # ✅ Zone pour uploader un fichier Excel (optionnel)
 uploaded_file = st.file_uploader("📂 Importer un fichier Excel", type=["xlsx"])
 
-# ✅ Chargement des données depuis GitHub si aucun fichier n'est uploadé
 if uploaded_file is not None:
-    df = load_data(uploaded_file)
-    st.success("✅ Fichier chargé depuis le téléchargement !")
-else:
-    df = load_data_from_repo()
-    st.success("✅ Base de données chargée automatiquement depuis le dépôt GitHub !")
+    df = pd.read_excel(uploaded_file, sheet_name="Sheet1", engine='openpyxl')
+    st.success("✅ Fichier chargé avec succès !")
+
 
 # ✅ Affichage des données importées AVANT traitement
 if not df.empty:

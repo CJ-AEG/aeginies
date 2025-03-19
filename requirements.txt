@@ -1,6 +1,8 @@
 streamlit
 pandas
 numpy
+requests
 selenium
-plotly
 tqdm
+plotly
+openpyxl
