@@ -94,7 +94,7 @@ def process_data(filtered_data):
     st.plotly_chart(fig)
 
 
-# Champ de recherche
+# ✅ Champ de recherche
 search_term = st.text_input("Type d'élément à afficher (exemple : Plancher bois)")
 
 if search_term:
@@ -108,11 +108,55 @@ if search_term:
         if filtered_data.empty:
             st.warning("⚠️ Aucun résultat trouvé.")
         else:
+            # ✅ Conversion explicite en float (gestion d'erreur)
+            filtered_data['Impact CO₂ (kg)'] = pd.to_numeric(filtered_data['Impact CO₂ (kg)'], errors='coerce').fillna(0)
+            filtered_data['D-Bénéfices'] = pd.to_numeric(filtered_data['D-Bénéfices'], errors='coerce').fillna(0)
+            filtered_data['Durée de Vie'] = pd.to_numeric(
+                filtered_data['Durée de Vie'].str.replace('ans', '').str.strip(), 
+                errors='coerce'
+            ).fillna(50)
+
+            # ✅ Calcul de l'Impact total et de l'Impact normalisé
+            filtered_data['Impact total'] = filtered_data['Impact CO₂ (kg)'] + filtered_data['D-Bénéfices']
+            filtered_data['Impact normalisé'] = filtered_data['Impact total'] * (50 / filtered_data['Durée de Vie'])
+
+            # ✅ Calcul du Z-Score
+            mean = filtered_data['Impact normalisé'].mean()
+            std = filtered_data['Impact normalisé'].std()
+            filtered_data['Z-Score'] = (filtered_data['Impact normalisé'] - mean) / std
+
+            # ✅ Catégorisation basée sur le Z-Score
+            filtered_data['Catégorie'] = pd.cut(
+                filtered_data['Z-Score'],
+                bins=[-np.inf, -1, 1, np.inf],
+                labels=['Bas carbone', 'Intermédiaire', 'Haut carbone']
+            ).astype(str)
+
+            # ✅ Marquer la valeur maximale et minimale
+            if not filtered_data.empty:
+                max_idx = filtered_data['Z-Score'].idxmax()
+                min_idx = filtered_data['Z-Score'].idxmin()
+                
+                filtered_data.loc[max_idx, 'Catégorie'] = f"{filtered_data.loc[max_idx, 'Catégorie']} (Valeur maximale)"
+                filtered_data.loc[min_idx, 'Catégorie'] = f"{filtered_data.loc[min_idx, 'Catégorie']} (Valeur minimale)"
+
+            # ✅ Affichage direct du tableau traité
             st.write(f"### 🔎 {len(filtered_data)} résultats trouvés :")
             st.dataframe(filtered_data)
 
-            # ✅ Lancer le traitement uniquement après une recherche réussie
-            if st.button("🔎 Traiter les données"):
-                process_data(filtered_data)
-    else:
-        st.warning("⚠️ Veuillez d'abord charger un fichier Excel valide avant de lancer une recherche.")
+            # ✅ Affichage du graphique Z-Score
+            fig = px.histogram(
+                filtered_data,
+                x='Z-Score',
+                nbins=20,
+                color='Catégorie',
+                color_discrete_map={
+                    'Bas carbone': '#2ca02c',
+                    'Intermédiaire': '#ff7f0e',
+                    'Haut carbone': '#d62728',
+                    'Bas carbone (Valeur minimale)': '#1f77b4',
+                    'Haut carbone (Valeur maximale)': '#9467bd'
+                }
+            )
+            fig.update_xaxes(range=[-3, 3])
+            st.plotly_chart(fig)
