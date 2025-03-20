@@ -6,3 +6,4 @@ selenium
 tqdm
 plotly
 openpyxl
+streamlit-modal
