@@ -4,6 +4,17 @@ import numpy as np
 import requests
 import io
 import plotly.express as px
+from PIL import Image
+
+# ✅ Charger le fichier CSS
+with open("styles.css") as f:
+    st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
+# ✅Charger le logo
+logo = Image.open("logo_aeg.jpg")
+
+# ✅Affichage dans la barre latérale
+st.sidebar.image(logo, use_column_width=True)
 
 # ✅ Déclaration globale du dataframe
 df = pd.DataFrame()
