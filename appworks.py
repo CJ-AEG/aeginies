@@ -48,9 +48,9 @@ if not df.empty:
     st.success("✅ Base de données chargée automatiquement depuis GitHub !")
 
 # ✅ Affichage de la base de données initiale au chargement
-if not df.empty:
-    st.write("### 🔎 Données initiales chargées :")
-    st.dataframe(df)
+#if not df.empty:
+    #st.write("### 🔎 Données initiales chargées :")
+    #st.dataframe(df)
 
 # ✅ Section sidebar pour importer un fichier Excel
 with st.sidebar:
@@ -152,9 +152,9 @@ if search_term:
         ])
     ]
 
-# ✅ Affichage automatique des résultats filtrés
+# ✅ Si filtrage seulement (sans recherche), lancer le traitement automatique
 if not filtered_df.empty:
-    st.write(f"### 🔎 {len(filtered_df)} résultats trouvés :")
-    st.dataframe(filtered_df)
-else:
-    st.warning("⚠️ Aucun résultat trouvé.")
+    process_data(filtered_df)
+
+
+
