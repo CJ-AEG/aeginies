@@ -6,6 +6,10 @@ import io
 import plotly.express as px
 from PIL import Image
 
+# ✅ Configuration de la page (MUST BE FIRST)
+st.set_page_config(layout="wide")
+st.title("AEG INIES Finder - Prototype SaaS")
+
 # ✅ Charger le fichier CSS
 with open("styles.css") as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
@@ -19,9 +23,6 @@ st.sidebar.image(logo, use_column_width=True)
 # ✅ Déclaration globale du dataframe
 df = pd.DataFrame()
 
-# ✅ Titre de l'application
-st.set_page_config(layout="wide")
-st.title("Analyse des Z-Scores - Prototype SaaS")
 
 # ✅ Charger automatiquement le fichier depuis GitHub
 @st.cache_data
