@@ -18,7 +18,7 @@ with open("styles.css") as f:
 logo = Image.open("logo_aeg.jpg")
 
 # ✅Affichage dans la barre latérale
-st.sidebar.image(logo, use_container_width=true)
+st.sidebar.image(logo, use_container_width=True)
 
 # ✅ Déclaration globale du dataframe
 df = pd.DataFrame()
