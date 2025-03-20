@@ -18,7 +18,7 @@ with open("styles.css") as f:
 logo = Image.open("logo_aeg.jpg")
 
 # ✅Affichage dans la barre latérale
-st.sidebar.image(logo, use_column_width=True)
+st.sidebar.image(logo, use_container_width=true)
 
 # ✅ Déclaration globale du dataframe
 df = pd.DataFrame()
@@ -55,7 +55,7 @@ if not df.empty:
 # ✅ Section sidebar pour importer un fichier Excel
 with st.sidebar:
     st.write("📂 **Optionnel : Importer un fichier Excel**")
-    uploaded_file = st.file_uploader("Importer un fichier Excel", type=["xlsx"])
+    uploaded_file = st.file_uploader("En cas de besoin, importer localement le fichier Excel de la base de données INIES", type=["xlsx"])
     if uploaded_file is not None:
         df = pd.read_excel(uploaded_file, sheet_name="Sheet1", engine='openpyxl')
         st.success("✅ Fichier chargé avec succès !")
