@@ -1,11 +1,18 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import streamlit as st
 import pandas as pd
 import os
 from PIL import Image
 import base64
+from utils import apply_styles
+
 
 # ✅ Configuration de la page
 st.set_page_config(layout="wide")
+
+apply_styles()
 
 # ✅ Charger le logo
 logo = Image.open("logo_aeg.jpg")

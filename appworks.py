@@ -7,6 +7,8 @@ import plotly.express as px
 from PIL import Image
 import base64
 from streamlit_modal import Modal
+from utils import apply_styles
+
 
 # ✅ Configuration de la page (MUST BE FIRST)
 st.set_page_config(layout="wide")
@@ -155,13 +157,21 @@ if not df.empty:
 
     # ✅ Champ de recherche
     with col1:
-        search_term = st.text_input("🔎 Type d'élément à afficher (exemple : Plancher bois)")
+        st.markdown(
+            "<h4 style='font-size:24px; font-weight:bold; color:#0047AB;'>🔎 Type d'élément à afficher :</h4>", 
+            unsafe_allow_html=True
+        )
+        search_term = st.text_input("Exemple : Plancher bois")
 
     # ✅ Filtrage par type de déclaration
-    type_declaration_options = ['Individuelle', 'Collective', 'DED', 'RE2020', 'EC']
     with col2:
+        st.markdown(
+            "<h4 style='font-size:24px; font-weight:bold; color:#0047AB;'>📌 Filtrer par type de déclaration :</h4>", 
+            unsafe_allow_html=True
+        )
+        type_declaration_options = ['Individuelle', 'Collective', 'DED', 'RE2020', 'EC']
         selected_types = st.multiselect(
-            "📌 Filtrer par type de déclaration :",
+            "",
             options=type_declaration_options,
             default=type_declaration_options
         )

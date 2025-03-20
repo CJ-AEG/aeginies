@@ -1,3 +1,6 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -5,9 +8,14 @@ import requests
 import io
 from PIL import Image
 import base64
+from utils import apply_styles
+
 
 # ✅ Configuration de la page
 st.set_page_config(layout="wide")
+
+apply_styles()
+
 
 # ✅ Charger le logo
 logo = Image.open("logo_aeg.jpg")
@@ -63,19 +71,28 @@ col1, col2 = st.columns(2)
 
 # ✅ Sélection du premier produit (clé unique)
 with col1:
+    st.markdown(
+        "<h4 style='font-size:24px; font-weight:bold; color:#0047AB;'>🛒 Sélectionner le premier produit :</h4>", 
+        unsafe_allow_html=True
+    )
     product_1 = st.selectbox(
-        "🛒 Sélectionner le premier produit :", 
+        "",  # On met une string vide car le titre est dans markdown
         df['Produit (ID)'].unique(),
         key="product_1"
     )
 
 # ✅ Sélection du second produit (clé unique)
 with col2:
+    st.markdown(
+        "<h4 style='font-size:24px; font-weight:bold; color:#0047AB;'>🛒 Sélectionner le second produit :</h4>", 
+        unsafe_allow_html=True
+    )
     product_2 = st.selectbox(
-        "🛒 Sélectionner le second produit :", 
+        "",
         df['Produit (ID)'].unique(),
         key="product_2"
     )
+
 
 # ✅ Vérification que les produits sont différents
 if product_1 == product_2:
