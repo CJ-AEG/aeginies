@@ -1,0 +1,10 @@
+[theme]
+primaryColor = "#0047AB"  # Bleu profond de l'entreprise
+backgroundColor = "#FFFFFF" # Blanc
+secondaryBackgroundColor = "#D0E6F7" # Bleu clair
+textColor = "#002D62" # Bleu foncé pour le texte
+font = "sans serif"
+
+#Gets rid of the ugly navigations on top left
+#[client]
+#showSidebarNavigation = false

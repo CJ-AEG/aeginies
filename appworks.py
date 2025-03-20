@@ -5,6 +5,8 @@ import requests
 import io
 import plotly.express as px
 from PIL import Image
+import base64
+from streamlit_modal import Modal
 
 # ✅ Configuration de la page (MUST BE FIRST)
 st.set_page_config(layout="wide")
@@ -14,11 +16,23 @@ st.title("AEG INIES Finder - Prototype SaaS")
 with open("styles.css") as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-# ✅Charger le logo
+# ✅ Charger le logo
 logo = Image.open("logo_aeg.jpg")
 
-# ✅Affichage dans la barre latérale
-st.sidebar.image(logo, use_container_width=True)
+# ✅ Convertir en base64 pour le rendre cliquable
+with open("logo_aeg.jpg", "rb") as img_file:
+    logo_base64 = base64.b64encode(img_file.read()).decode()
+
+# ✅ Affichage du logo en tant que bouton cliquable
+st.sidebar.markdown(
+    f"""
+    <a href="/" target="_self">
+        <img src="data:image/png;base64,{logo_base64}" style="width: 100%; height: auto;">
+    </a>
+    """,
+    unsafe_allow_html=True
+)
+
 
 # ✅ Déclaration globale du dataframe
 df = pd.DataFrame()
@@ -47,21 +61,30 @@ df = load_data_from_repo()
 if not df.empty:
     st.success("✅ Base de données chargée automatiquement depuis GitHub !")
 
-# ✅ Affichage de la base de données initiale au chargement
-#if not df.empty:
-    #st.write("### 🔎 Données initiales chargées :")
-    #st.dataframe(df)
+# ✅ Créer une fenêtre modale pour l'importation
+modal = Modal("📥 Importer un fichier Excel", key="import_excel")
 
-# ✅ Section sidebar pour importer un fichier Excel
-with st.sidebar:
-    st.write("📂 **Optionnel : Importer un fichier Excel**")
-    uploaded_file = st.file_uploader("En cas de besoin, importer localement le fichier Excel de la base de données INIES", type=["xlsx"])
-    if uploaded_file is not None:
-        df = pd.read_excel(uploaded_file, sheet_name="Sheet1", engine='openpyxl')
-        st.success("✅ Fichier chargé avec succès !")
-        st.write("### 🔎 Données importées :")
-        st.dataframe(df)
+# ✅ Bouton pour ouvrir la popup
+if st.sidebar.button("📥 Importer un fichier Excel"):
+    modal.open()
 
+# ✅ Contenu de la popup
+if modal.is_open():
+    with modal.container():
+        st.write("**📂 Glissez le fichier ici**")
+        uploaded_file = st.file_uploader("", type=["xlsx"])
+        
+        if uploaded_file is not None:
+            df = pd.read_excel(uploaded_file, sheet_name="Sheet1", engine='openpyxl')
+            st.success("✅ Fichier chargé avec succès !")
+            modal.close()
+            st.rerun()  # 🔥 Mettre à jour l'application après fermeture de la popup
+
+		
+        
+        # ✅ Bouton pour fermer la popup
+        if st.button("❌ Fermer"):
+            modal.close()
 
 # ✅ Fonction de traitement des données après recherche
 def process_data(filtered_data):
@@ -124,37 +147,45 @@ def process_data(filtered_data):
     fig.update_xaxes(range=[-3, 3])
     st.plotly_chart(fig)
 
-# ✅ Barre de recherche + Filtrage par type de déclaration (NOUVEAU CODE)
-col1, col2 = st.columns([3, 2])
+# ✅ Vérifier que df n'est pas vide avant de filtrer
+if not df.empty:
 
-# ✅ Champ de recherche
-with col1:
-    search_term = st.text_input("🔎 Type d'élément à afficher (exemple : Plancher bois)")
+    # ✅ Barre de recherche + Filtrage par type de déclaration (NOUVEAU CODE)
+    col1, col2 = st.columns([3, 2])
 
-# ✅ Filtrage par type de déclaration
-type_declaration_options = ['Individuelle', 'Collective', 'DED', 'RE2020', 'EC']
-with col2:
-    selected_types = st.multiselect(
-        "📌 Filtrer par type de déclaration :",
-        options=type_declaration_options,
-        default=type_declaration_options
-    )
+    # ✅ Champ de recherche
+    with col1:
+        search_term = st.text_input("🔎 Type d'élément à afficher (exemple : Plancher bois)")
 
-# ✅ Appliquer le filtrage directement après sélection
-filtered_df = df[df['Type de Déclaration'].isin(selected_types)]
+    # ✅ Filtrage par type de déclaration
+    type_declaration_options = ['Individuelle', 'Collective', 'DED', 'RE2020', 'EC']
+    with col2:
+        selected_types = st.multiselect(
+            "📌 Filtrer par type de déclaration :",
+            options=type_declaration_options,
+            default=type_declaration_options
+        )
 
-# ✅ Si recherche en plus du filtrage par type de déclaration
-if search_term:
-    terms = search_term.split()
-    filtered_df = filtered_df[
-        np.logical_and.reduce([
-            filtered_df['Nom du produit'].str.contains(term, case=False, na=False) for term in terms
-        ])
-    ]
+    # ✅ Appliquer le filtrage directement après sélection
+    filtered_df = df[df['Type de Déclaration'].isin(selected_types)]
 
-# ✅ Si filtrage seulement (sans recherche), lancer le traitement automatique
-if not filtered_df.empty:
-    process_data(filtered_df)
+    # ✅ Si recherche en plus du filtrage par type de déclaration
+    if search_term:
+        terms = search_term.split()
+        filtered_df = filtered_df[
+            np.logical_and.reduce([
+                filtered_df['Nom du produit'].str.contains(term, case=False, na=False) for term in terms
+            ])
+        ]
+
+    # ✅ Si filtrage seulement (sans recherche), lancer le traitement automatique
+    if not filtered_df.empty:
+        process_data(filtered_df)
+
+else:
+    st.warning("⚠️ Base de données vide ! Importez un fichier pour continuer.")
 
 
-
+# ✅ Bouton pour afficher base de données complètes
+if st.sidebar.button("📊 Afficher la base de données complète"):
+    st.switch_page("pages/baseiniespage.py")
