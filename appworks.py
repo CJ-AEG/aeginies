@@ -62,6 +62,7 @@ with st.sidebar:
         st.write("### 🔎 Données importées :")
         st.dataframe(df)
 
+
 # ✅ Fonction de traitement des données après recherche
 def process_data(filtered_data):
     global df   # ✅ Déclaré comme global
@@ -123,21 +124,37 @@ def process_data(filtered_data):
     fig.update_xaxes(range=[-3, 3])
     st.plotly_chart(fig)
 
+# ✅ Barre de recherche + Filtrage par type de déclaration (NOUVEAU CODE)
+col1, col2 = st.columns([3, 2])
+
 # ✅ Champ de recherche
-search_term = st.text_input("Type d'élément à afficher (exemple : Plancher bois)")
+with col1:
+    search_term = st.text_input("🔎 Type d'élément à afficher (exemple : Plancher bois)")
 
+# ✅ Filtrage par type de déclaration
+type_declaration_options = ['Individuelle', 'Collective', 'DED', 'RE2020', 'EC']
+with col2:
+    selected_types = st.multiselect(
+        "📌 Filtrer par type de déclaration :",
+        options=type_declaration_options,
+        default=type_declaration_options
+    )
+
+# ✅ Appliquer le filtrage directement après sélection
+filtered_df = df[df['Type de Déclaration'].isin(selected_types)]
+
+# ✅ Si recherche en plus du filtrage par type de déclaration
 if search_term:
-    if df is not None and not df.empty:
-        # ✅ Recherche intelligente (AND) basée sur chaque mot-clé
-        terms = search_term.split()
-        filtered_data = df[
-            np.logical_and.reduce([df['Nom du produit'].str.contains(term, case=False, na=False) for term in terms])
-        ]
+    terms = search_term.split()
+    filtered_df = filtered_df[
+        np.logical_and.reduce([
+            filtered_df['Nom du produit'].str.contains(term, case=False, na=False) for term in terms
+        ])
+    ]
 
-        if filtered_data.empty:
-            st.warning("⚠️ Aucun résultat trouvé.")
-        else:
-            # ✅ Lancer le traitement automatiquement après la recherche
-            process_data(filtered_data)
-    else:
-        st.warning("⚠️ Veuillez d'abord charger un fichier Excel valide avant de lancer une recherche.")
+# ✅ Affichage automatique des résultats filtrés
+if not filtered_df.empty:
+    st.write(f"### 🔎 {len(filtered_df)} résultats trouvés :")
+    st.dataframe(filtered_df)
+else:
+    st.warning("⚠️ Aucun résultat trouvé.")
