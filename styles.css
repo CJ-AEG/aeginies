@@ -1,0 +1,17 @@
+/* Style général */
+body {
+    font-family: 'Arial', sans-serif;
+}
+
+/* Style des boutons */
+button {
+    background-color: #0047AB !important;
+    color: #FFFFFF !important;
+    border-radius: 10px !important;
+    padding: 8px 20px !important;
+}
+
+/* Style des en-têtes */
+h1, h2, h3 {
+    color: #002D62 !important;
+}
