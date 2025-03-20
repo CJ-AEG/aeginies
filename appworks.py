@@ -189,3 +189,7 @@ else:
 # ✅ Bouton pour afficher base de données complètes
 if st.sidebar.button("📊 Afficher la base de données complète"):
     st.switch_page("pages/baseiniespage.py")
+
+# ✅ Bouton pour accéder à la page de comparaison
+if st.sidebar.button("🔎 Comparer des produits"):
+    st.switch_page("pages/comparaison.py")
