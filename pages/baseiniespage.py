@@ -14,6 +14,11 @@ st.set_page_config(layout="wide")
 
 apply_styles()
 
+# ✅ Vérification de connexion
+if "logged_in" not in st.session_state or not st.session_state.logged_in:
+    st.warning("⚠️ Vous devez être connecté pour accéder à cette page.")
+    st.switch_page("login.py")
+
 # ✅ Charger le logo
 logo = Image.open("logo_aeg.jpg")
 
