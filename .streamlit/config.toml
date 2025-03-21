@@ -6,6 +6,15 @@ textColor = "#002D62"
 font = "sans serif"
 
 
+[server]
+enableXsrfProtection = false
+enableCORS = false
+
+[multipage]
+enabled = true
+
+
+
 #Gets rid of the ugly navigations on top left
 #[client]
 #showSidebarNavigation = false
