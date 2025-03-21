@@ -182,15 +182,22 @@ if not df.empty:
     # ✅ Si recherche en plus du filtrage par type de déclaration
     if search_term:
         terms = search_term.split()
+
+        # ✅ Filtrage amélioré basé sur "Nom du produit" ET "Unité Fonctionnelle"
         filtered_df = filtered_df[
             np.logical_and.reduce([
-                filtered_df['Nom du produit'].str.contains(term, case=False, na=False) for term in terms
+                filtered_df['Nom du produit'].str.contains(term, case=False, na=False) |
+                filtered_df['Unité Fonctionnelle'].str.contains(term, case=False, na=False)
+                for term in terms
             ])
         ]
 
-    # ✅ Si filtrage seulement (sans recherche), lancer le traitement automatique
+    # ✅ Lancer le traitement si résultats disponibles
     if not filtered_df.empty:
-        process_data(filtered_df)
+        process_data(filtered_df)  # ✅ Laisse cette fonction gérer l'affichage du tableau + nombre de résultats
+
+    else:
+        st.warning("⚠️ Aucun résultat trouvé.")
 
 else:
     st.warning("⚠️ Base de données vide ! Importez un fichier pour continuer.")
