@@ -4,6 +4,30 @@ import os
 from pathlib import Path
 import pandas as pd
 import numpy as np
+from PIL import Image
+import base64
+
+# ✅ Vérification de connexion
+if "logged_in" not in st.session_state or not st.session_state.logged_in:
+    st.warning("⚠️ Vous devez être connecté pour accéder à cette page.")
+    st.switch_page("login.py")
+
+# ✅ Charger le logo
+logo = Image.open("logo_aeg.jpg")
+
+# ✅ Convertir en base64 pour le rendre cliquable
+with open("logo_aeg.jpg", "rb") as img_file:
+    logo_base64 = base64.b64encode(img_file.read()).decode()
+
+# ✅ Affichage du logo en tant que bouton cliquable
+st.sidebar.markdown(
+    f"""
+    <a href="/" target="_self">
+        <img src="data:image/png;base64,{logo_base64}" style="width: 100%; height: auto;">
+    </a>
+    """,
+    unsafe_allow_html=True
+)
 
 # Chargement de la base INIES
 if "df_inies" not in st.session_state:
