@@ -1,0 +1,64 @@
+{
+    "Test": {
+        "nom": "Test",
+        "categorie": "Murs béton",
+        "produits": [
+            {
+                "id_inies": "",
+                "nom": "",
+                "quantité": 0.0,
+                "impact_normalisé": 0.0,
+                "durée_vie": 50,
+                "d_bénéfices": 0.0
+            }
+        ]
+    },
+    "Test2": {
+        "nom": "Test2",
+        "categorie": "Murs béton",
+        "produits": [
+            {
+                "id_inies": "5511",
+                "nom": "[E+C-] Combustion d'un kWh de bois plaquettes en chaudière - DONNEE ENVIRONNEMENTALE CONVENTIONNELLE",
+                "quantité": 1.2,
+                "unité": "Mise à disposition d’1kWh d'énergie par combustion de bois plaquettes en chaudière",
+                "impact_normalisé": 0.02,
+                "durée_vie": 50,
+                "d_bénéfices": 0.0
+            },
+            {
+                "id_inies": "5511",
+                "nom": "[E+C-] Combustion d'un kWh de bois plaquettes en chaudière - DONNEE ENVIRONNEMENTALE CONVENTIONNELLE",
+                "quantité": 1.2,
+                "unité": "Mise à disposition d’1kWh d'énergie par combustion de bois plaquettes en chaudière",
+                "impact_normalisé": 0.02,
+                "durée_vie": 50,
+                "d_bénéfices": 0.0
+            },
+            {
+                "id_inies": "5511",
+                "nom": "[E+C-] Combustion d'un kWh de bois plaquettes en chaudière - DONNEE ENVIRONNEMENTALE CONVENTIONNELLE",
+                "quantité": 1.2,
+                "unité": "Mise à disposition d’1kWh d'énergie par combustion de bois plaquettes en chaudière",
+                "impact_normalisé": 0.02,
+                "durée_vie": 50,
+                "d_bénéfices": 0.0
+            }
+        ]
+    },
+    "Test 3 ": {
+        "nom": "Test 3 ",
+        "categorie": "Murs ossature bois",
+        "produits": [
+            {
+                "id_inies": "5513",
+                "nom": "[E+C-] Combustion d'un kWh de bois granulés en poêle à bois - DONNEE ENVIRONNEMENTALE CONVENTIONNELLE",
+                "quantité": 1.2,
+                "unité": "Mise à disposition d’1kWh d'énergie par combustion de bois granulés en poêle à bois",
+                "impact_normalisé": 0.04,
+                "durée_vie": 50,
+                "d_bénéfices": 0.0
+            }
+        ]
+    }
+}
