@@ -7,6 +7,9 @@ import numpy as np
 from PIL import Image
 import base64
 
+st.set_page_config(page_title="Solutions prédéfinies", layout="wide")
+st.title("🧱 Gestion des solutions prédéfinies")
+
 # ✅ Vérification de connexion
 if "logged_in" not in st.session_state or not st.session_state.logged_in:
     st.warning("⚠️ Vous devez être connecté pour accéder à cette page.")
@@ -82,8 +85,7 @@ def search_products(df, query):
                 df["ID INIES"].astype(str).str.contains(word, na=False, regex=False)
     return df[mask]
 
-st.set_page_config(page_title="Solutions prédéfinies", layout="wide")
-st.title("🧱 Gestion des solutions prédéfinies")
+
 
 solutions = load_solutions()
 view_tab, create_tab = st.tabs(["📂 Visualiser les solutions", "➕ Créer une solution"])
