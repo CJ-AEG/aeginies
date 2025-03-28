@@ -204,3 +204,111 @@ with view_tab:
                     if st.button(f"🗑️ Supprimer", key=f"delete_{name}"):
                         delete_solution(name, solutions)
                         st.rerun()
+
+with create_tab:
+    st.subheader("Création d'une nouvelle solution")
+
+    if "new_solution_produits" not in st.session_state:
+        st.session_state.new_solution_produits = []
+
+    solution_name = st.text_input("Nom de la solution", "")
+
+    categories_possibles = [
+        "Toitures", "Murs ossature bois", "Planchers", "Murs béton", "Menuiseries", "Autres"
+    ]
+    categorie = st.selectbox("Catégorie de la solution", categories_possibles)
+
+    st.markdown("### Ajouter un produit à la solution")
+    df_inies = st.session_state.get("df_inies", pd.DataFrame())
+
+    if "saisie_libre_creation" not in st.session_state:
+        st.session_state.saisie_libre_creation = False
+
+    st.session_state.saisie_libre_creation = st.checkbox("🔓 Mode saisie libre", value=st.session_state.saisie_libre_creation)
+
+    produit_nom = ""
+    selected_row = None
+
+    if st.session_state.saisie_libre_creation:
+        produit_nom = st.text_input("Nom ou ID INIES du produit 1", "")
+    else:
+        options = [
+            f"{row['Nom du produit']} (ID: {row['ID INIES']})"
+            for _, row in df_inies.iterrows()
+        ]
+        produit_nom = st.selectbox("Nom ou ID INIES du produit 1", options)
+
+        def extract_product_id(option):
+            if "(ID: " in option:
+                return option.split("(ID: ")[-1].replace(")", "")
+            return None
+
+        id_inies = extract_product_id(produit_nom)
+        if id_inies and id_inies in df_inies["ID INIES"].astype(str).values:
+            selected_row = df_inies[df_inies["ID INIES"].astype(str) == id_inies].iloc[0]
+        else:
+            selected_row = None
+
+    quantité = st.number_input("Quantité", min_value=0.0, format="%.2f")
+
+    if selected_row is not None:
+        id_inies = selected_row["ID INIES"]
+        impact_co2 = selected_row["Impact CO₂ (kg)"]
+        d_benefices = selected_row.get("D-Bénéfices", 0) or 0
+        duree_vie = selected_row.get("Durée de Vie", 50)
+        try:
+            duree_vie = int(str(duree_vie).split()[0])
+        except:
+            duree_vie = 50
+        impact_normalisé = round((float(impact_co2) + float(d_benefices)) * (50 / duree_vie) * float(quantité), 2)
+    else:
+        id_inies = ""
+        impact_normalisé = 0.0
+        duree_vie = 50
+        d_benefices = 0.0
+
+    st.write(f"**Impact CO₂ normalisé : {impact_normalisé:.1f} kg**")
+
+    if st.button("➕ Ajouter ce produit à la solution"):
+        st.session_state.new_solution_produits.append({
+            "id_inies": str(id_inies),
+            "nom": str(produit_nom),
+            "quantité": float(quantité),
+            "impact_normalisé": float(impact_normalisé),
+            "durée_vie": int(duree_vie),
+            "d_bénéfices": float(d_benefices)
+        })
+        st.success("Produit ajouté.")
+
+    if st.session_state.new_solution_produits:
+        st.markdown("### Produits dans la solution")
+        df_temp = pd.DataFrame(st.session_state.new_solution_produits)
+        df_affiche = df_temp[["nom", "quantité", "impact_normalisé"]].rename(columns={
+            "nom": "Nom du produit",
+            "quantité": "Quantité",
+            "impact_normalisé": "Impact CO₂ normalisé (kg)"
+        })
+        st.dataframe(df_affiche, use_container_width=True)
+
+        total = df_temp["impact_normalisé"].sum()
+        st.markdown(f"**Impact total estimé : {total:.2f} kg**")
+
+        for i in range(len(st.session_state.new_solution_produits)):
+            if st.button(f"❌ Supprimer le produit {i+1}", key=f"remove_{i}"):
+                st.session_state.new_solution_produits.pop(i)
+                st.rerun()
+
+    if st.session_state.new_solution_produits and solution_name.strip():
+        if st.button("💾 Enregistrer la solution"):
+            if solution_name in solutions:
+                st.warning("Une solution avec ce nom existe déjà.")
+            else:
+                solutions[solution_name] = {
+                    "nom": solution_name,
+                    "categorie": categorie,
+                    "produits": st.session_state.new_solution_produits,
+                }
+                save_solutions(solutions)
+                st.success("✅ Solution enregistrée avec succès.")
+                st.session_state.new_solution_produits = []
+                st.rerun()
